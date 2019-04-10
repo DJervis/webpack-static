@@ -1,7 +1,6 @@
-import _ from 'lodash';
-import $ from 'jquery';
 import Swiper from 'swiper';
 import './assets/less/base.less';
+import Util from './assets/js/common';
 
 function sayHi() {
   var element = $('div');
@@ -9,3 +8,7 @@ function sayHi() {
   $('#main').append(element);
 }
 // sayHi();
+
+Util.sayHi()
+
+new Swiper()
