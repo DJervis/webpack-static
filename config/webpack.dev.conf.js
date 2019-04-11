@@ -3,6 +3,8 @@ const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const CopyPlugin = require('copy-webpack-plugin');
+
 const pages = require('./pages');
 
 let entry = {
@@ -27,7 +29,7 @@ module.exports = {
   entry,
   devtool: 'cheap-module-eval-source-map',
   devServer: {
-    contentBase: path.join(__dirname, 'dist'),
+    contentBase: path.join(__dirname, '../dist'),
     hot: true,
     compress: true,
     port: 3000
@@ -49,9 +51,15 @@ module.exports = {
       $: 'jquery',
       jQuery: 'jquery'
     }),
+    new CopyPlugin([
+      {
+        from: path.resolve(__dirname, '../static'),
+        to: '../dist/static'
+      }
+    ]),
     new webpack.NamedModulesPlugin(),
     new webpack.HotModuleReplacementPlugin(),
-    new CleanWebpackPlugin(['dist']),
+    new CleanWebpackPlugin(['../dist']),
   ],
   optimization: {
     splitChunks: {
@@ -74,6 +82,17 @@ module.exports = {
   },
   module: {
     rules: [
+      {
+        test: /\.js$/,
+        include: path.resolve(__dirname, '../src'),
+        exclude: /(node_modules|bower_components)/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-env']
+          }
+        }
+      },
       {
         test: /\.less$/,
         use: [
@@ -108,5 +127,14 @@ module.exports = {
     path: path.resolve(__dirname, '../dist'),
     filename: 'assets/js/[name].bundle.js',
     chunkFilename: 'assets/js/[name].chunk.js'
+  },
+  resolve: {
+    extensions: ['.js', '.json'], // 自动解析的文件，引入模块时不用带扩展名
+    // 设置常用别名
+    alias: {
+      '@': path.resolve(__dirname, '../src/'),
+      'Assets': path.resolve(__dirname, '../src/assets/'),
+      'Static': path.resolve(__dirname, '../static/')
+    }
   }
 }
